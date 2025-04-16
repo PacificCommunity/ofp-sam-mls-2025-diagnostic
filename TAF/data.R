@@ -25,3 +25,19 @@ lencomp <- as.data.table(tmp_data$lencomp) %>%
            .[order(fishery,year,month,length)]
 
 fwrite(lencomp,"data/lencomp.csv")
+
+# extract age composition data; reformat from wide to long
+# only retain observations fitted in the model
+agecomp <- as.data.table(tmp_data$agecomp) %>%
+           .[,part:=NULL] %>%
+           .[,ageerr:=NULL] %>%
+           .[,Nsamp:=NULL] %>%
+           .[,Lbin_lo:=NULL] %>%
+           melt(.,id.vars=c("year","month","fleet","sex","Lbin_hi")) %>%
+           .[,variable:=as.numeric(gsub("a","",variable))] %>%
+           .[year>0&value>0] %>%
+           setnames(.,c("fleet","variable","value","Lbin_hi"),c("fishery","age","freq","length")) %>%
+           .[order(fishery,year,month,age,length)] %>%
+           .[,.(year,month,fishery,sex,age,length,freq)]
+
+fwrite(lencomp,"data/agecomp.csv")
