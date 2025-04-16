@@ -4,6 +4,7 @@
 # After:
 
 library(TAF)
+library(r4ss)
 
 mkdir("data")
 
