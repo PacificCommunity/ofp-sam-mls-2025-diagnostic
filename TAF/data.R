@@ -32,3 +32,8 @@ lencomp <- as.data.table(tmp_data$lencomp) %>%
            .[order(fishery,year,month,length)]
 
 fwrite(lencomp,"data/lencomp.csv")
+
+catch <- tmp_data$catch
+names(catch) <- c("year", "season", "fishery", "catch", "cv")
+catch <- catch[catch$year > 1900,]
+write.taf(catch, dir="data")
