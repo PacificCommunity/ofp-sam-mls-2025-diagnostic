@@ -12,6 +12,13 @@ mkdir("data")
 
 # read in Stock Synthesis data file
 tmp_data = SS_readdat("boot/data/data_echo.ss_new")
+cpue <- tmp_data[["CPUE"]]
+colnames(cpue) <-c("year", "season", "fishery", "index", "cv")
+cpue_nocv=cpue[,-5]
+
+write.taf(cpue_nocv, file = "data/cpue.csv")
+
+
 
 # extract length composition data; reformat from wide to long
 # only retain observations fitted in the model
