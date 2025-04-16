@@ -12,6 +12,13 @@ mkdir("data")
 
 # read in Stock Synthesis data file
 tmp_data = SS_readdat("boot/data/data_echo.ss_new")
+cpue <- tmp_data[["CPUE"]]
+colnames(cpue) <-c("year", "season", "fishery", "index", "cv")
+cpue_nocv=cpue[,-5]
+
+write.taf(cpue_nocv, file = "data/cpue.csv")
+
+
 
 # extract length composition data; reformat from wide to long
 # only retain observations fitted in the model
@@ -40,4 +47,23 @@ agecomp <- as.data.table(tmp_data$agecomp) %>%
            .[order(fishery,year,month,age,length)] %>%
            .[,.(year,month,fishery,sex,age,length,freq)]
 
-fwrite(lencomp,"data/agecomp.csv")
+fwrite(agecomp,"data/agecomp.csv")
+
+catch <- tmp_data$catch
+names(catch) <- c("year", "season", "fishery", "catch", "cv")
+catch <- catch[catch$year > 1900,]
+write.taf(catch, dir="data")
+
+# extract length composition data; reformat from wide to long
+# only retain observations fitted in the model
+sizefreq <- as.data.table(tmp_data$sizefreq_data_list[[1]]) %>%
+           .[,part:=NULL] %>%
+           .[,Nsamp:=NULL] %>%
+           .[,method:=NULL] %>%
+           melt(.,id.vars=c("year","month","fleet","sex")) %>%
+           .[,variable:=as.numeric(gsub("a","",variable))] %>%
+           .[year>0&value>0] %>%
+           setnames(.,c("fleet","variable","value"),c("fishery","weight","freq")) %>%
+           .[order(fishery,year,month,length)]
+write.taf(sizefreq, "data/weight_comps.csv")
+
