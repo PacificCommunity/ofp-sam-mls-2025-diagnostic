@@ -11,21 +11,21 @@ library(magrittr)
 mkdir("data")
 
 # Read in Stock Synthesis data file
-tmp_data <- SS_readdat("boot/data/data_echo.ss_new")
+dat <- SS_readdat("boot/data/data_echo.ss_new")
 
 # Extract catch
-catch <- tmp_data$catch
+catch <- dat$catch
 names(catch) <- c("year", "season", "fishery", "catch", "cv")
 catch <- catch[catch$year > 0,]
 write.taf(catch, dir="data")
 
 # Extract CPUE
-cpue <- tmp_data$CPUE
+cpue <- dat$CPUE
 colnames(cpue) <- c("year", "season", "fishery", "index", "cv")
 
 # Extract length comps
 # reformat from wide to long, exclude negative years
-length.comps <- as.data.table(tmp_data$lencomp) %>%
+length.comps <- as.data.table(dat$lencomp) %>%
   .[, sex:=NULL] %>%
   .[, part:=NULL] %>%
   .[, Nsamp:=NULL] %>%
@@ -37,7 +37,7 @@ length.comps <- as.data.table(tmp_data$lencomp) %>%
 
 # Extract weight comps
 # reformat from wide to long, exclude negative years
-weight.comps <- as.data.table(tmp_data$sizefreq_data_list[[1]]) %>%
+weight.comps <- as.data.table(dat$sizefreq_data_list[[1]]) %>%
   .[, method:=NULL] %>%
   .[, sex:=NULL] %>%
   .[, part:=NULL] %>%
